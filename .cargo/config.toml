@@ -1,0 +1,26 @@
+RUSTFLAGS = ["--cfg", "docsrs"]
+
+[workspace]
+members = ["nexight-backend"]
+
+[workspace.dependencies]
+actix-web = "4"
+diesel = { version = "2", features = ["postgres", "r2d2", "chrono"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+
+[profile.dev]
+debug = true
+incremental = true
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.test]
+opt-level = 1
+
+[profile.bench]
+opt-level = 3

@@ -1,0 +1,30 @@
+# Docker Compose para desenvolvimento
+services:
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: nexight-postgres-dev
+    environment:
+      POSTGRES_DB: nexight_dev
+      POSTGRES_USER: nexight
+      POSTGRES_PASSWORD: nexight123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - nexight-dev-network
+
+  redis-dev:
+    image: redis:7-alpine
+    container_name: nexight-redis-dev
+    ports:
+      - "6379:6379"
+    networks:
+      - nexight-dev-network
+
+volumes:
+  postgres_dev_data:
+
+networks:
+  nexight-dev-network:
+    driver: bridge
