@@ -1,8 +1,3 @@
-mod application;
-mod domain;
-mod infrastructure;
-mod interfaces;
-
 use actix_web::{web, App, HttpResponse, HttpServer, Result};
 use dotenvy::dotenv;
 use env_logger::Env;
