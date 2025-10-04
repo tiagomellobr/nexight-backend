@@ -5,6 +5,7 @@ use std::sync::Arc;
 
 /// Métodos HTTP suportados
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[allow(dead_code)]
 pub enum HttpMethod {
     GET,
     POST,
@@ -17,6 +18,7 @@ pub enum HttpMethod {
 
 /// Representa uma requisição HTTP de forma agnóstica ao framework
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct Request {
     pub method: HttpMethod,
     pub path: String,
@@ -27,6 +29,7 @@ pub struct Request {
 
 impl Request {
     /// Converte o body para JSON deserializado
+    #[allow(dead_code)]
     pub fn json<T: for<'de> Deserialize<'de>>(&self) -> Result<T, serde_json::Error> {
         match &self.body {
             Some(bytes) => serde_json::from_slice(bytes),
@@ -71,9 +74,20 @@ impl Response {
         Self::new(400)
     }
 
+    /// Resposta 401 Unauthorized
+    pub fn unauthorized() -> Self {
+        Self::new(401)
+    }
+
     /// Resposta 404 Not Found
+    #[allow(dead_code)]
     pub fn not_found() -> Self {
         Self::new(404)
+    }
+
+    /// Resposta 409 Conflict
+    pub fn conflict() -> Self {
+        Self::new(409)
     }
 
     /// Resposta 500 Internal Server Error
@@ -82,6 +96,7 @@ impl Response {
     }
 
     /// Define um header
+    #[allow(dead_code)]
     pub fn with_header(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
         self.headers.insert(key.into(), value.into());
         self
@@ -95,6 +110,7 @@ impl Response {
     }
 
     /// Define o body como texto
+    #[allow(dead_code)]
     pub fn text(mut self, text: impl Into<String>) -> Self {
         self.body = Some(text.into().into_bytes());
         self.headers.insert("Content-Type".to_string(), "text/plain".to_string());
@@ -106,6 +122,7 @@ impl Response {
 pub type RouteHandler = Arc<dyn Fn(Request) -> std::pin::Pin<Box<dyn std::future::Future<Output = Response> + Send>> + Send + Sync>;
 
 /// Representa uma rota no servidor
+#[allow(dead_code)]
 pub struct Route {
     pub method: HttpMethod,
     pub path: String,
@@ -113,6 +130,7 @@ pub struct Route {
 }
 
 impl Route {
+    #[allow(dead_code)]
     pub fn new(method: HttpMethod, path: impl Into<String>, handler: RouteHandler) -> Self {
         Self {
             method,
@@ -125,6 +143,7 @@ impl Route {
 /// Trait que define o comportamento de um servidor web
 /// Esta abstração permite trocar de framework (actix_web, warp, axum, etc.)
 #[async_trait]
+#[allow(dead_code)]
 pub trait WebServer: Send + Sync {
     /// Adiciona uma rota ao servidor
     fn add_route(&mut self, route: Route);

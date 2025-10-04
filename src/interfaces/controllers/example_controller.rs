@@ -23,6 +23,7 @@ pub struct EchoResponse {
 /// 3. Processa os dados (lógica de negócio)
 /// 4. Cria uma resposta usando nossos tipos abstratos
 /// 5. Converte a resposta para HttpResponse do Actix
+#[allow(dead_code)]
 pub async fn echo_handler(req: HttpRequest, body: web::Bytes) -> actix_web::HttpResponse {
     // 1. Converte a requisição
     let request = ActixWebServer::convert_request(&req, body);
@@ -70,6 +71,7 @@ pub async fn echo_handler(req: HttpRequest, body: web::Bytes) -> actix_web::Http
 }
 
 /// Handler que demonstra acesso a headers e query params
+#[allow(dead_code)]
 pub async fn info_handler(req: HttpRequest, body: web::Bytes) -> actix_web::HttpResponse {
     let request = ActixWebServer::convert_request(&req, body);
     

@@ -20,8 +20,11 @@ pub enum UserRepositoryError {
 pub trait UserRepository: Send + Sync {
     async fn create(&self, user: User) -> Result<User, UserRepositoryError>;
     async fn find_by_email(&self, email: &str) -> Result<Option<User>, UserRepositoryError>;
+    #[allow(dead_code)]
     async fn find_by_id(&self, id: Uuid) -> Result<Option<User>, UserRepositoryError>;
+    #[allow(dead_code)]
     async fn update(&self, user: User) -> Result<User, UserRepositoryError>;
+    #[allow(dead_code)]
     async fn delete(&self, id: Uuid) -> Result<(), UserRepositoryError>;
 }
 

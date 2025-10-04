@@ -15,7 +15,11 @@ impl ActixWebServer {
         Self
     }
 
-    /// Converte um HttpRequest do Actix para nosso Request abstrato
+    /// Converte uma requisição do Actix Web para nosso tipo abstrato
+    /// 
+    /// Esta função não é usada atualmente mas está disponível caso
+    /// precisemos processar requisições de forma agnóstica ao framework
+    #[allow(dead_code)]
     pub fn convert_request(req: &HttpRequest, body: web::Bytes) -> Request {
         let method = match req.method().as_str() {
             "GET" => HttpMethod::GET,

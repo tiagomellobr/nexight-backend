@@ -9,6 +9,7 @@ pub struct User {
     pub email: String,
     pub password_hash: String,
     pub name: String,
+    pub is_active: bool,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -67,6 +68,7 @@ impl User {
             email,
             password_hash,
             name,
+            is_active: true,
             created_at: now,
             updated_at: now,
         }

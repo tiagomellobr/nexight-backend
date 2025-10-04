@@ -21,9 +21,11 @@ pub enum AuthError {
     TokenGenerationError,
 
     #[error("Invalid token")]
+    #[allow(dead_code)]
     InvalidToken,
 
     #[error("Token expired")]
+    #[allow(dead_code)]
     TokenExpired,
 }
 
@@ -91,6 +93,7 @@ impl AuthService {
     }
 
     /// Verify and decode a JWT token
+    #[allow(dead_code)]
     pub fn verify_token(&self, token: &str) -> Result<Claims, AuthError> {
         let validation = Validation::default();
 
