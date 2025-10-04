@@ -11,10 +11,13 @@ mod domain;
 use infrastructure::web::{ActixWebServer, Response};
 use infrastructure::database::{establish_connection_pool, run_migrations};
 use infrastructure::repositories::diesel_user_repository::DieselUserRepository;
+use infrastructure::repositories::diesel_article_category_repository::DieselArticleCategoryRepository;
 use application::services::auth_service::AuthService;
 use application::use_cases::register_user::RegisterUserUseCase;
 use application::use_cases::login_user::LoginUserUseCase;
+use application::use_cases::list_article_categories::ListArticleCategoriesUseCase;
 use interfaces::controllers::auth_controller::AuthController;
+use interfaces::controllers::article_category_controller::ArticleCategoryController;
 
 /// Handler de health check usando nossos tipos abstratos
 async fn health_check_handler(_req: HttpRequest, _body: web::Bytes) -> actix_web::HttpResponse {
@@ -52,6 +55,7 @@ async fn main() -> std::io::Result<()> {
 
     // Cria repositórios
     let user_repository = Arc::new(DieselUserRepository::new(db_pool.clone()));
+    let category_repository = Arc::new(DieselArticleCategoryRepository::new(db_pool.clone()));
 
     // Cria serviços
     let jwt_secret = std::env::var("JWT_SECRET")
@@ -72,11 +76,17 @@ async fn main() -> std::io::Result<()> {
         user_repository.clone(),
         auth_service.clone(),
     ));
+    let list_categories_use_case = Arc::new(ListArticleCategoriesUseCase::new(
+        category_repository.clone(),
+    ));
 
     // Cria controllers
     let auth_controller = Arc::new(AuthController::new(
         register_use_case,
         login_use_case,
+    ));
+    let category_controller = Arc::new(ArticleCategoryController::new(
+        list_categories_use_case,
     ));
 
     // Obtém configurações do servidor
@@ -92,6 +102,7 @@ async fn main() -> std::io::Result<()> {
     // mas com handlers que usam nossos tipos abstratos via adapter
     HttpServer::new(move || {
         let auth_ctrl = auth_controller.clone();
+        let category_ctrl = category_controller.clone();
         
         App::new()
             .route("/health", web::get().to(health_check_handler))
@@ -107,6 +118,13 @@ async fn main() -> std::io::Result<()> {
                 move |req: HttpRequest, body: web::Bytes| {
                     let controller = ctrl.clone();
                     async move { controller.login(req, body).await }
+                }
+            }))
+            .route("/categories", web::get().to({
+                let ctrl = category_ctrl.clone();
+                move |req: HttpRequest, body: web::Bytes| {
+                    let controller = ctrl.clone();
+                    async move { controller.list(req, body).await }
                 }
             }))
     })
