@@ -1,12 +1,29 @@
-use actix_web::{web, App, HttpResponse, HttpServer, Result};
+use actix_web::{web, App, HttpServer, HttpRequest};
 use dotenvy::dotenv;
 use env_logger::Env;
 
-async fn health_check() -> Result<HttpResponse> {
-    Ok(HttpResponse::Ok().json(serde_json::json!({
-        "status": "ok",
-        "message": "Nexight Backend API is running"
-    })))
+mod infrastructure;
+mod interfaces;
+mod application;
+mod domain;
+
+use infrastructure::web::{ActixWebServer, Response};
+
+/// Handler de health check usando nossos tipos abstratos
+async fn health_check_handler(_req: HttpRequest, _body: web::Bytes) -> actix_web::HttpResponse {
+    // Converte o request do Actix para nosso tipo abstrato (não usado neste caso)
+    // let request = ActixWebServer::convert_request(&req, body);
+    
+    // Cria a resposta usando nossos tipos abstratos
+    let response = Response::ok()
+        .json(&serde_json::json!({
+            "status": "ok",
+            "message": "Nexight Backend API is running"
+        }))
+        .unwrap_or_else(|_| Response::internal_error());
+    
+    // Converte a resposta abstrata para HttpResponse do Actix
+    ActixWebServer::convert_response(response)
 }
 
 #[actix_web::main]
@@ -29,9 +46,11 @@ async fn main() -> std::io::Result<()> {
 
     log::info!("🚀 Iniciando Nexight Backend API em {}:{}", host, port);
 
+    // Inicia o servidor usando Actix Web diretamente
+    // mas com handlers que usam nossos tipos abstratos via adapter
     HttpServer::new(|| {
         App::new()
-            .route("/health", web::get().to(health_check))
+            .route("/health", web::get().to(health_check_handler))
     })
     .bind(format!("{}:{}", host, port))?
     .run()
