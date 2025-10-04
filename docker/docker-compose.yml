@@ -62,6 +62,10 @@ services:
     restart: unless-stopped
     volumes:
       - ../logs:/app/logs
+      # Para desenvolvimento: descomente as linhas abaixo para hot-reload
+      # - ../src:/app/src:ro
+      # - ../Cargo.toml:/app/Cargo.toml:ro
+      # - ../Cargo.lock:/app/Cargo.lock:ro
 
   # Nginx como reverse proxy (opcional)
   nginx:

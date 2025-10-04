@@ -4,31 +4,42 @@ Backend API em Rust para o sistema Nexight, construído com Actix-web.
 
 ## 🚀 Início Rápido
 
-### Opção 1: Tudo no Docker (Recomendado)
+### Opção 1: Docker com Hot Reload (Recomendado para Dev)
+```bash
+cd docker
+docker-compose -f docker-compose.dev.yml up
+```
+✅ Atualiza automaticamente quando você modifica o código!
+
+### Opção 2: Docker Produção
 ```bash
 ./docker-compose.sh up -d
 ```
 
-Verificar status:
+Atualizar código após mudanças:
 ```bash
-./docker-compose.sh ps
+./rebuild.sh
 ```
 
-Testar API:
-```bash
-curl http://localhost:8005/health
-```
-
-### Opção 2: Desenvolvimento Local (apenas bancos no Docker)
+### Opção 3: Desenvolvimento Local (apenas bancos no Docker)
 ```bash
 # Iniciar apenas PostgreSQL e Redis
 cd docker
-docker-compose -f docker-compose.dev.yml up -d
+docker-compose -f docker-compose.dev.yml up postgres-dev redis-dev -d
 
 # Voltar para raiz e rodar aplicação
 cd ..
 cargo run
 ```
+
+### 🔄 Atualizando Código no Container
+
+**Problema:** Container não atualiza quando você modifica arquivos `.rs`?
+
+**Soluções:**
+1. **Modo Dev com hot-reload:** `cd docker && docker-compose -f docker-compose.dev.yml up`
+2. **Rebuild rápido:** `./rebuild.sh`
+3. **Ver guia completo:** [`DOCKER_UPDATE.md`](DOCKER_UPDATE.md)
 
 ### Comandos Úteis
 
@@ -36,7 +47,8 @@ cargo run
 ```bash
 ./docker-compose.sh logs -f        # Ver logs
 ./docker-compose.sh down           # Parar tudo
-./docker-compose.sh up --build -d  # Rebuild
+./rebuild.sh                       # Atualizar código no container
+./rebuild.sh --no-cache            # Rebuild completo sem cache
 ```
 
 **Banco de Dados:**

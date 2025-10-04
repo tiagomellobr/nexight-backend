@@ -13,6 +13,11 @@ services:
       - postgres_dev_data:/var/lib/postgresql/data
     networks:
       - nexight-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nexight -d nexight_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis-dev:
     image: redis:7-alpine
@@ -22,8 +27,42 @@ services:
     networks:
       - nexight-dev-network
 
+  # Aplicação em modo desenvolvimento com cargo watch
+  app-dev:
+    image: rust:latest
+    container_name: nexight-backend-dev
+    working_dir: /app
+    environment:
+      - RUST_LOG=debug
+      - DATABASE_URL=postgresql://nexight:nexight123@postgres-dev:5432/nexight_dev
+      - REDIS_URL=redis://redis-dev:6379
+      - JWT_SECRET=dev-secret-key
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8005
+    ports:
+      - "8005:8005"
+    volumes:
+      - ..:/app
+      - cargo_cache:/usr/local/cargo/registry
+      - target_cache:/app/target
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+      redis-dev:
+        condition: service_started
+    networks:
+      - nexight-dev-network
+    command: >
+      bash -c "
+        apt-get update && apt-get install -y libpq-dev pkg-config libssl-dev &&
+        cargo install cargo-watch 2>/dev/null || true &&
+        cargo watch -x run
+      "
+
 volumes:
   postgres_dev_data:
+  cargo_cache:
+  target_cache:
 
 networks:
   nexight-dev-network:

@@ -20,8 +20,9 @@ RUN mkdir src && echo "fn main() {}" > src/main.rs
 # Compilar dependências
 RUN cargo build --release && rm -rf src
 
-# Copiar código fonte
+# Copiar código fonte e migrations
 COPY src ./src
+COPY migrations ./migrations
 
 # Recompilar com o código real
 RUN cargo build --release
