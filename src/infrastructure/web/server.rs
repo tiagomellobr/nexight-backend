@@ -69,6 +69,11 @@ impl Response {
         Self::new(201)
     }
 
+    /// Resposta 204 No Content
+    pub fn no_content() -> Self {
+        Self::new(204)
+    }
+
     /// Resposta 400 Bad Request
     pub fn bad_request() -> Self {
         Self::new(400)

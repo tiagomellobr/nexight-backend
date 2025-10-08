@@ -1,5 +1,6 @@
 // Módulo de configurações de banco de dados
 pub mod schema;
+pub mod models;
 
 use diesel::prelude::*;
 use diesel::r2d2::{ConnectionManager, Pool};
